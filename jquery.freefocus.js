@@ -47,6 +47,8 @@ Copyright (c) 2013-2015 Ilia Ablamonov. Licensed under the MIT license.
       return;
     }
 
+    moveOptions = $.extend({}, $.freefocus.moveOptions, moveOptions);
+
     if (setupOptions === 'cache') {
       var cacheOptions = $.extend({}, $.freefocus.cacheOptions, moveOptions);
 
@@ -184,6 +186,11 @@ Copyright (c) 2013-2015 Ilia Ablamonov. Licensed under the MIT license.
       return;
     }
 
+    if (options === 'init') {
+      initFocus.call(this);
+      return;
+    }
+
     if (!this.length) {
       if (options.debug) {
         console.warn('freefocus called on empty jQuery object');
@@ -242,6 +249,24 @@ Copyright (c) 2013-2015 Ilia Ablamonov. Licensed under the MIT license.
     return $(toEl);
   };
 
+
+  function initFocus() {
+    var self = this;
+    var maxGridDepth = 0;
+    var selector = $.freefocus.moveOptions.focusGridSelector || '.focus-grid';
+    var innermostGrids = this.find(selector).filter(function () {
+      return $(this).find(selector).length === 0;
+    });
+    innermostGrids.each(function () {
+      var depth = 0;
+      $(this).addClass('focus-grid-depth-' + ++depth);
+      $(this).parentsUntil(self.parent(), selector).each(function () {
+        $(this).addClass('focus-grid-depth-' + ++depth);
+      });
+      maxGridDepth = depth > maxGridDepth ? depth : maxGridDepth;
+    });
+    return maxGridDepth;
+  }
   /*
 
   Defaults:
@@ -319,7 +344,7 @@ Copyright (c) 2013-2015 Ilia Ablamonov. Licensed under the MIT license.
       var hint = style && parseStyleString(style)['nav-' + direction];
       return fixToshiba(hint);
     }
-  );
+    );
 
   /*
 

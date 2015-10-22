@@ -4,3 +4,4 @@ bower_components
 .grunt
 docs
 .idea
+npm-debug.log
